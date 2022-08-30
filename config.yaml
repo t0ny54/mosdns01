@@ -1,116 +1,99 @@
 log:
   level: info
-  file: ""
 
 data_providers:
   - tag: geosite
-    file: ./geosite.dat
+    file: "/etc/mosdns/geosite.dat"
     auto_reload: true
   - tag: geoip
-    file: ./geoip.dat
+    file: "/etc/mosdns/geoip.dat"
+    auto_reload: true
+  - tag: hosts
+    file: "/etc/mosdns/hosts"
     auto_reload: true
 
 plugins:
-  # 缓存
-  - tag: cache
-    type: cache
-    args:
-      size: 1024
-
-  # 转发至本地服务器的插件
-  - tag: forward_local
-    type: fast_forward
+  - tag: "forward_upstream"
+    type: "fast_forward"
     args:
       upstream:
-        - addr: https://1.12.12.12/dns-query
-
-  # 转发至远程服务器的插件
-  - tag: forward_remote
-    type: fast_forward
+        - addr: 'https://dns.adguard-dns.com/dns-query'
+          dial_addr: '94.140.15.15:443'
+          trusted: true 
+          
+  - tag: "mem_cache"
+    type: "cache"
     args:
-      upstream:
-        - addr: https://8.8.8.8/dns-query
+      size: 40960
+      lazy_cache_ttl: 259200
+      lazy_cache_reply_ttl: 30
 
-  # 匹配本地域名的插件
-  - tag: query_is_local_domain
-    type: query_matcher
+  - tag: "add_ecs"
+    type: "ecs"
     args:
-      domain:
-        - 'provider:geosite:cn'
+      auto: true
+      force_overwrite: false  
 
-  # 匹配非本地域名的插件
-  - tag: query_is_non_local_domain
-    type: query_matcher
+  - tag: "hosts"
+    type: "hosts"
     args:
-      domain:
-        - 'provider:geosite:geolocation-!cn'
+      hosts:
+        - "example.example 127.0.0.1"
 
-  # 匹配广告域名的插件
-  - tag: query_is_ad_domain
+  - tag: query_is_blacklist_domain
     type: query_matcher
     args:
       domain:
         - 'provider:geosite:category-ads-all'
-
-  # 匹配本地 IP 的插件
-  - tag: response_has_local_ip
+        - 'provider:geosite:win-spy'
+        - 'provider:hosts'
+ 
+  - tag: response_has_blacklist_ip
     type: response_matcher
     args:
       ip:
         - 'provider:geoip:cn'
+      # - "192.168.1.1/24"
+  # geoip support two-letter country code: https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2
 
-  # 主要的运行逻辑插件
-  # sequence 插件中调用的插件 tag 必须在 sequence 前定义，
-  # 否则 sequence 找不到对应插件。
-  - tag: main_sequence
-    type: sequence
+  - tag: "forward"
+    type: "sequence"
     args:
       exec:
-        # 缓存
-        - cache
+        - _misc_optm
+        - mem_cache
+      # - hosts
 
-        # 屏蔽广告域名
-        - if: query_is_ad_domain
+      # Block AAAA dns request for dual-stack domains
+      # - _prefer_ipv4
+      
+      # Block A dns request for dual-stack domains
+      # - _prefer_ipv6
+        
+        # AD blocking
+        - if: query_is_blacklist_domain
           exec:
             - _new_nxdomain_response
             - _return
+        
+        # If you wish to disable ECS, comment out following line.
+        - add_ecs
 
-        # 已知的本地域名用本地服务器解析
-        - if: query_is_local_domain
-          exec:
-            - forward_local
-            - _return
+        - forward_upstream
+      
+      # Block CN IP responses.
+      # - if: response_has_blacklist_ip
+      #   exec:
+      #     - _drop_response
+      #     - _return
 
-        # 已知的非本地域名用远程服务器解析
-        - if: query_is_non_local_domain
-          exec:
-            - _prefer_ipv4
-            - forward_remote
-            - _return
-
-          # 剩下的未知域名用 IP 分流。
-          # 这里借助了 `fallback` 工作机制。分流原理请参考 `fallback`
-          # 的工作流程。
-          # primary 从本地服务器获取应答，丢弃非本地 IP 的结果。
-        - primary:
-            - forward_local
-            - if: "(! response_has_local_ip) && [_response_valid_answer]"
-              exec:
-                - _drop_response
-          # secondary 从远程服务器获取应答。
-          secondary:
-            - _prefer_ipv4
-            - forward_remote
-          # 这里建议设置成 local 服务器正常延时的 2~5 倍。
-          # 这个延时保证了 local 延时偶尔变高时，其结果不会被 remote 抢答。
-          # 如果 local 超过这个延时还没响应，可以假设 local 出现了问题。
-          # 这时用就采用 remote 的应答。单位: 毫秒。
-          fast_fallback: 200
+        - _return
 
 servers:
-  - exec: main_sequence
-    listeners:
-      - protocol: udp
-        addr: 0.0.0.0:53
-      - protocol: tcp
-        addr: 0.0.0.0:53
+  - exec: forward    
+    timeout: 5    
+    listeners:   
+      - protocol: http
+        addr: ":PORT_PLACEHOLDER"   
+        url_path: "PATH_PLACEHOLDER"
+        get_user_ip_from_header: "X-Forwarded-For"
