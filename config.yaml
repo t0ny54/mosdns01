@@ -3,13 +3,10 @@ log:
 
 data_providers:
   - tag: geosite
-    file: "/etc/mosdns/geosite.dat"
+    file: ./geosite.dat
     auto_reload: true
   - tag: geoip
-    file: "/etc/mosdns/geoip.dat"
-    auto_reload: true
-  - tag: hosts
-    file: "/etc/mosdns/hosts"
+    file: ./geoip.dat
     auto_reload: true
 
 plugins:
@@ -46,7 +43,6 @@ plugins:
       domain:
         - 'provider:geosite:category-ads-all'
         - 'provider:geosite:win-spy'
-        - 'provider:hosts'
  
   - tag: response_has_blacklist_ip
     type: response_matcher
