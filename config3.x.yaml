@@ -8,9 +8,6 @@ data_providers:
   - tag: geoip
     file: ./geoip.dat
     auto_reload: true
-  - tag: hosts
-    file: "/etc/mosdns/hosts"
-    auto_reload: true
 
 plugins:
   - tag: "forward_upstream"
@@ -46,7 +43,6 @@ plugins:
       domain:
         - 'provider:geosite:category-ads-all'
         - 'provider:geosite:win-spy'
-        - 'provider:hosts'
  
   - tag: response_has_blacklist_ip
     type: response_matcher
