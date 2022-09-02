@@ -7,7 +7,7 @@ on:
     - cron: '15 16 * * *'
 
 jobs:
-  deploy:
+  build-docker:
     runs-on: ubuntu-latest
     steps:
       - name: Setup Python
