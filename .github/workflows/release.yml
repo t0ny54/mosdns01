@@ -7,36 +7,16 @@ on:
     - cron: '0 0 28 * *'
 
 jobs:
-  build-docker:
+  deploy:
+    name: Deploy proxy
     runs-on: ubuntu-latest
     steps:
-    - name: Checkout
-      uses: actions/checkout@v3
-
-    - name: Set env
-      run: |
-        echo "TAG=$(cat tag)" >> $GITHUB_ENV
-
-    - name: Set up QEMU
-      uses: docker/setup-qemu-action@v2
-
-    - name: Set up Docker Buildx
-      uses: docker/setup-buildx-action@v2
-
-    - name: Login to DockerHub
-      uses: docker/login-action@v2
-      with:
-        username: ${{ secrets.DOCKERHUB_USERNAME }}
-        password: ${{ secrets.DOCKERHUB_TOKEN }}
-
-    - name: Build and push
-      uses: docker/build-push-action@v3
-      with:
-        build-args: |
-          REPOSITORY=IrineSistiana/mosdns
-          TAG=${{ env.TAG }}
-        platforms: linux/amd64
-        push: true
-        tags: |
-          ${{ secrets.DOCKERHUB_USERNAME }}/mosdns:latest
-          ${{ secrets.DOCKERHUB_USERNAME }}/mosdns:${{ env.TAG }}
+      # This step checks out a copy of your repository.
+      - uses: actions/checkout@v3
+      - uses: superfly/flyctl-actions/setup-flyctl@master
+      - run: flyctl apps create blockerdns && flyctl regions set sin -a blockerdns && flyctl deploy --detach -a blockerdns --remote-only --no-cache
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+      - run: flyctl regions set sin -a sg-doh
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
