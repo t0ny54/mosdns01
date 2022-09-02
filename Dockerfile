@@ -1,6 +1,7 @@
 FROM irinesistiana/mosdns:latest
 
 ADD hosts /hosts
+COPY ./content /etc/mosdns
 COPY hosts /hosts
 
 RUN sh /etc/mosdns/install_geodata.sh
