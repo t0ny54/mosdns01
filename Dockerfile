@@ -1,12 +1,7 @@
 FROM irinesistiana/mosdns:latest
 
-ADD crontab.txt /crontab.txt
-ADD script.sh /script.sh
 ADD hosts /hosts
 COPY hosts /hosts
-RUN /usr/bin/crontab /crontab.txt
-
-COPY ./content /etc/mosdns
 
 RUN sh /etc/mosdns/install_geodata.sh
 
