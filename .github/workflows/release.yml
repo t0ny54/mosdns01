@@ -4,16 +4,24 @@ on:
   repository_dispatch:
   workflow_dispatch:
   schedule:
-    - cron: '0 0 28 * *'
+    - cron: '15 16 * * *'
 
 jobs:
   deploy:
-    name: Deploy proxy
     runs-on: ubuntu-latest
     steps:
-      # This step checks out a copy of your repository.
-      - uses: actions/checkout@v3
-      - uses: superfly/flyctl-actions/setup-flyctl@master
-      - run: flyctl deploy --detach -a blockdns --remote-only --no-cache
+      - name: Setup Python
+        uses: actions/setup-python@v3
+
+      - name: Build blocklist
+        uses: actions/checkout@v3
+      - run: |
+          chmod +x ./updatehosts.sh
+          ./updatehosts.sh
+          
+      - name: Deploy
+        uses: superfly/flyctl-actions/setup-flyctl@master
+      - run: flyctl deploy --detach -a blockdns --remote-only --no-cache && flyctl regions set sin -a blockdns
         env:
           FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+          
