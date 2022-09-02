@@ -17,6 +17,3 @@ jobs:
       - run: flyctl deploy --image antonyitunamaku88/mosdns:latest -a blockdns --remote-only --no-cache
         env:
           FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
-      - run: flyctl regions set sin -a sg-doh
-        env:
-          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
