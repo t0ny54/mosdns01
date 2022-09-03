@@ -7,7 +7,7 @@ set -m
 sh /etc/mosdns/my_first_process.sh &
   
 # Start the second process
-sh /etc/mosdns/my_second_process.sh &
+sh /etc/mosdns/my_second_process.sh
 
 # now we bring the primary process back into the foreground
 # and leave it there
