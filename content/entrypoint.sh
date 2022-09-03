@@ -1,7 +1,13 @@
-#!/bin/sh
+#!/bin/bash
 
-sh /etc/mosdns/install_geodata.sh
-
-sed -i "s|PORT_PLACEHOLDER|${PORT}|;s|PATH_PLACEHOLDER|${DOH_PATH}|" /etc/mosdns/config.yaml
-
-exec mosdns start -d /etc/mosdns
+# Start the first process
+./my_first_process &
+  
+# Start the second process
+./my_second_process &
+  
+# Wait for any process to exit
+wait -n
+  
+# Exit with status of process that exited first
+exit $?
