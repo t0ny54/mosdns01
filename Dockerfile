@@ -7,8 +7,6 @@ ADD crontab.txt /crontab.txt
 ADD script1.sh /script1.sh
 ADD script2.sh /script2.sh
 
-RUN sh /etc/mosdns/install_geodata.sh
-
 ENV PORT=8080
 ENV DOH_PATH=/dns-query
 
