@@ -10,50 +10,22 @@
 # You can set this variable whatever you want in shell session right before running this script by issuing:
 # export DAT_PATH='/usr/local/lib/v2ray'
 
-DAT_PATH=${DAT_PATH:-/etc/mosdns}
+#!/usr/bin/env sh
 
-DOWNLOAD_LINK_GEOIP="https://github.com/Loyalsoldier/v2ray-rules-dat/raw/release/geoip.dat"
-DOWNLOAD_LINK_GEOSITE="https://github.com/Loyalsoldier/v2ray-rules-dat/raw/release/geosite.dat"
-file_ip='geoip.dat'
-file_dlc='geosite.dat'
-dir_tmp="$(mktemp -d)"
+GEOIP_URL="https://github.com/Loyalsoldier/v2ray-rules-dat/raw/release/geoip.dat"
+NEW_GEOIP="/tmp/geoip.dat"
+GEOIP_PATH="/etc/mosdns/geoip.dat"
 
-download_files() {
-  if ! wget -q --no-cache -O "${dir_tmp}/${2}" "${1}"; then
-    echo 'error: Download failed! Please check your network or try again.'
-    exit 1
-  fi
-  if ! wget -q --no-cache -O "${dir_tmp}/${2}.sha256sum" "${1}.sha256sum"; then
-    echo 'error: Download failed! Please check your network or try again.'
-    exit 1
-  fi
-}
+# Grab hosts file
+wget -O $NEW_GEOIP $GEOIP_URL
 
-check_sum() {
-  (
-    cd "${dir_tmp}" || exit
-    for i in "${dir_tmp}"/*.sha256sum; do
-      if ! sha256sum -c "${i}"; then
-        echo 'error: Check failed! Please check your network or try again.'
-        exit 1
-      fi
-    done
-  )
-}
+cp -v $NEW_GEOIP $GEOIP_PATH
 
-install_file() {
-  mkdir -p ${DAT_PATH} 2>/dev/null
-  cp -af "${dir_tmp}"/${file_dlc} "${DAT_PATH}"/${file_dlc}
-  cp -af "${dir_tmp}"/${file_ip} "${DAT_PATH}"/${file_ip}
-  rm -r "${dir_tmp}"
-}
+GEOSITE_URL="https://github.com/Loyalsoldier/v2ray-rules-dat/raw/release/geosite.dat"
+NEW_GEOSITE="/tmp/geosite.dat"
+GEOSITE_PATH="/etc/mosdns/geosite.dat"
 
-main() {
-  echo "Updating geoip.dat and geosite.dat"
-  download_files $DOWNLOAD_LINK_GEOIP $file_ip
-  download_files $DOWNLOAD_LINK_GEOSITE $file_dlc
-  check_sum
-  install_file
-}
+# Grab hosts file
+wget -O $NEW_GEOSITE $GEOSITE_URL
 
-main "$@"
+cp -v $NEW_GEOSITE $GEOSITE_PATH
