@@ -14,5 +14,7 @@ ENV PORT=8080
 ENV DOH_PATH=/dns-query
 
 EXPOSE 8080
-
+RUN chmod +x /my_first_process
+RUN chmod +x /my_second_process
+RUN chmod +x /etc/mosdns/entrypoint.sh
 ENTRYPOINT [ "sh","/etc/mosdns/entrypoint.sh" ]
