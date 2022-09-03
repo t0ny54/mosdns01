@@ -1,17 +1,4 @@
-FROM --platform=${TARGETPLATFORM} golang:alpine as builder
-ARG CGO_ENABLED=0
-ARG TAG
-ARG REPOSITORY
-
-WORKDIR /root
-RUN apk add --update git \
-	&& git clone https://github.com/${REPOSITORY} mosdns \
-	&& cd ./mosdns \
-	&& git fetch --all --tags \
-	&& git checkout tags/${TAG} \
-	&& go build -ldflags "-s -w -X main.version=${TAG}" -trimpath -o mosdns
-
-FROM --platform=${TARGETPLATFORM} alpine:latest
+FROM irinesistiana/mosdns:latest
 
 ADD crontab.txt /crontab.txt
 ADD script.sh /script.sh
