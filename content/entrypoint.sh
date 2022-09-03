@@ -1,10 +1,10 @@
 #!/bin/bash
 
 # Start the first process
-./my_first_process &
+sh /etc/mosdns/my_first_process.sh &
   
 # Start the second process
-./my_second_process &
+sh /etc/mosdns/my_second_process.sh &
   
 # Wait for any process to exit
 wait -n

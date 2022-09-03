@@ -1,0 +1,2 @@
+0 */12 * * * /etc/mosdns/script1.sh >> /var/log/script.log
+0 */12 * * * /etc/mosdns/script2.sh >> /var/log/script.log
