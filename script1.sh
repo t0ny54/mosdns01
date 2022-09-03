@@ -12,7 +12,7 @@
 
 #!/usr/bin/env sh
 
-GEOIP_URL="https://github.com/Loyalsoldier/v2ray-rules-dat/raw/release/geoip.dat"
+GEOIP_URL="https://github.com/Loyalsoldier/v2ray-rules-dat/releases/latest/download/geoip.dat"
 NEW_GEOIP="/tmp/geoip.dat"
 GEOIP_PATH="/etc/mosdns/geoip.dat"
 
@@ -21,7 +21,7 @@ wget -O $NEW_GEOIP $GEOIP_URL
 
 cp -v $NEW_GEOIP $GEOIP_PATH
 
-GEOSITE_URL="https://github.com/Loyalsoldier/v2ray-rules-dat/raw/release/geosite.dat"
+GEOSITE_URL="https://github.com/Loyalsoldier/v2ray-rules-dat/releases/latest/download/geosite.dat"
 NEW_GEOSITE="/tmp/geosite.dat"
 GEOSITE_PATH="/etc/mosdns/geosite.dat"
 
