@@ -1,14 +1,7 @@
-#!/bin/bash
+#!/bin/sh
 
-# turn on bash's job control
-set -m
+sh /etc/mosdns/install_geodata.sh
 
-# Start the first process
-sh /etc/mosdns/my_first_process.sh &
-  
-# Start the second process
-sh /etc/mosdns/my_second_process.sh
+sed -i "s|PORT_PLACEHOLDER|${PORT}|;s|PATH_PLACEHOLDER|${DOH_PATH}|" /etc/mosdns/config.yaml
 
-# now we bring the primary process back into the foreground
-# and leave it there
-fg %1
+exec mosdns start -d /etc/mosdns
