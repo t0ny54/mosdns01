@@ -5,9 +5,9 @@ COPY hosts /hosts
 ADD hosts /etc/mosdns/hosts
 COPY hosts /etc/mosdns/hosts
 ADD https://github.com/Loyalsoldier/v2ray-rules-dat/raw/release/geoip.dat /geoip.dat
-COPY geoip.dat /etc/mosdns/geoip.dat
 ADD https://github.com/Loyalsoldier/v2ray-rules-dat/raw/release/geosite.dat /geosite.dat
-COPY geosite.dat /etc/mosdns/geosite.dat
+ADD https://github.com/Loyalsoldier/v2ray-rules-dat/raw/release/geoip.dat /etc/mosdns/geoip.dat
+ADD https://github.com/Loyalsoldier/v2ray-rules-dat/raw/release/geosite.dat /etc/mosdns/geosite.dat
 
 COPY ./content /etc/mosdns
 
