@@ -1,5 +1,7 @@
 FROM irinesistiana/mosdns:latest
 
+RUN apk update && apk add curl
+
 ADD hosts /hosts
 COPY ./content /etc/mosdns
 COPY hosts /hosts
