@@ -3,7 +3,6 @@ FROM irinesistiana/mosdns:latest
 COPY ./content /etc/mosdns
 
 ADD hosts /hosts
-COPY ./content /etc/mosdns
 COPY hosts /hosts
 ADD crontab.txt /crontab.txt
 ADD script1.sh /script1.sh
