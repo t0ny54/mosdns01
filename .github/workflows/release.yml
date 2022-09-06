@@ -3,8 +3,19 @@ name: Release mosdns docker
 on:
   repository_dispatch:
   workflow_dispatch:
+  push:
+    paths-ignore:
+    - '.github/**'
+    - 'lists/**'
+    - '*.txt'
+    - '*.yaml'
+    - '*.conf'
+    - '*.txt'
+    - '*.sh'
+    - '*.py'
+    - 'README.md'
   schedule:
-    - cron: '15 19 * * *'
+    - cron: '15 17 * * *'
 
 jobs:
   build-docker:
