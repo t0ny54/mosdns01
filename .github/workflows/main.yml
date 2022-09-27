@@ -14,7 +14,7 @@ on:
     - '*.py'
     - 'README.md'
   schedule:
-    - cron: '00 17 * * *'
+    - cron: '00 17 15 * *'
 
 jobs:
   build-blocklist:
